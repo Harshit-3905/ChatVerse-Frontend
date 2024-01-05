@@ -6,15 +6,71 @@ import {
   InputGroup,
   InputRightElement,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import validator from "validator";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const showClick = () => setShow(!show);
-
+  const navigate = useNavigate();
+  const toast = useToast();
+  const LoginHandler = () => {
+    setIsLoading(true);
+    if (email === "" || password === "") {
+      toast({
+        title: "Invalid Credentials",
+        description: "Please Enter Valid Credentials",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      setIsLoading(false);
+      return;
+    }
+    if (!validator.isEmail(email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please Enter Valid Email",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      setIsLoading(false);
+      return;
+    }
+    axios
+      .post("http://localhost:3000/api/user/login", {
+        email,
+        password,
+      })
+      .then((res) => {
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("email", res.data.email);
+        navigate("/home");
+      })
+      .catch((err) => {
+        console.log(err);
+        toast({
+          title: "Error",
+          description: err.response.data.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        setIsLoading(false);
+      });
+  };
+  const GuestHandler = () => {
+    setEmail("guest@example.com");
+    setPassword("Guest");
+  };
   return (
     <VStack p={2}>
       <FormControl isRequired>
@@ -53,10 +109,17 @@ const Login = () => {
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <Button w="100%" rounded="xl" mt={5} colorScheme="green">
+      <Button
+        w="100%"
+        rounded="xl"
+        mt={5}
+        colorScheme="green"
+        onClick={LoginHandler}
+        isLoading={isLoading}
+      >
         Login
       </Button>
-      <Button w="100%" rounded="xl" colorScheme="red">
+      <Button w="100%" rounded="xl" colorScheme="red" onClick={GuestHandler}>
         Get Guest User Credentials
       </Button>
     </VStack>

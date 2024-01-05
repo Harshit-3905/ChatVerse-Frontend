@@ -28,7 +28,7 @@ const Auth = () => {
       <Box
         backgroundColor="purple.300"
         rounded="2xl"
-        w="75%"
+        w="70%"
         p={2}
         textAlign="center"
       >
@@ -40,11 +40,11 @@ const Auth = () => {
         gap={10}
         backgroundColor="purple.300"
         rounded="2xl"
-        w="75%"
+        w="70%"
       >
         <Image src={image} h="400px" w="500px" rounded="2xl"></Image>
         <Box w="500px">
-          <Tabs variant="enclosed" w="95%">
+          <Tabs variant="solid-rounded" w="95%">
             <TabList size={10}>
               <Tab
                 _selected={{ color: "white", bg: "blue.400" }}

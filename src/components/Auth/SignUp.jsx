@@ -6,16 +6,70 @@ import {
   InputGroup,
   InputRightElement,
   Button,
+  useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import validator from "validator";
+import axios from "axios";
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const showClick = () => setShow(!show);
-
+  const toast = useToast();
+  const navigate = useNavigate();
+  const RegisterHandler = () => {
+    setIsLoading(true);
+    if (name === "" || email === "" || password === "") {
+      toast({
+        title: "Invalid Credentials",
+        description: "Please Enter Valid Credentials",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      setIsLoading(false);
+      return;
+    }
+    if (!validator.isEmail(email)) {
+      toast({
+        title: "Invalid Email",
+        description: "Please Enter Valid Email",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      setIsLoading(false);
+      return;
+    }
+    axios
+      .post("http://localhost:3000/api/user/register", {
+        name,
+        email,
+        password,
+      })
+      .then((res) => {
+        navigate("/home");
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("email", res.data.email);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast({
+          title: "Error",
+          description: "Something went wrong",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+        setIsLoading(false);
+        return;
+      });
+  };
   return (
     <VStack p={2}>
       <FormControl isRequired>
@@ -65,7 +119,14 @@ const SignUp = () => {
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <Button w="100%" rounded="xl" mt={5} colorScheme="red">
+      <Button
+        w="100%"
+        rounded="xl"
+        mt={5}
+        colorScheme="red"
+        onClick={RegisterHandler}
+        isLoading={isLoading}
+      >
         SignUp
       </Button>
     </VStack>
