@@ -53,7 +53,6 @@ const Login = () => {
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("email", res.data.email);
-        navigate("/home");
       })
       .catch((err) => {
         console.log(err);
@@ -64,12 +63,21 @@ const Login = () => {
           duration: 3000,
           isClosable: true,
         });
-        setIsLoading(false);
+        return;
       });
+    setIsLoading(false);
+    toast({
+      title: "Success",
+      description: "Logged In Successfully",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+    navigate("/home");
   };
   const GuestHandler = () => {
     setEmail("guest@example.com");
-    setPassword("Guest");
+    setPassword("guest");
   };
   return (
     <VStack p={2}>

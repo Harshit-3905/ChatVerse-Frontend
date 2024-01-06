@@ -53,7 +53,6 @@ const SignUp = () => {
         password,
       })
       .then((res) => {
-        navigate("/home");
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("email", res.data.email);
       })
@@ -66,9 +65,17 @@ const SignUp = () => {
           duration: 3000,
           isClosable: true,
         });
-        setIsLoading(false);
         return;
       });
+    setIsLoading(false);
+    toast({
+      title: "Success",
+      description: "User Registered Successfully",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+    });
+    navigate("/home");
   };
   return (
     <VStack p={2}>
